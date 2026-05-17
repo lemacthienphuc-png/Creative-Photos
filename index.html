@@ -40,7 +40,7 @@ body {
 .audio-control {
     position: fixed;
     top: 40px;
-    right: 8%; /* Aligned to match the instruction's left margin */
+    right: 8%;
     z-index: 100;
     background: none;
     border: none;
@@ -51,6 +51,11 @@ body {
     text-transform: uppercase;
     cursor: pointer;
     transition: color 0.3s ease;
+}
+
+/* NEW: offset the second button so they don't overlap */
+#lang-btn {
+    right: calc(8% + 80px);
 }
 
 .audio-control:hover {
@@ -244,6 +249,7 @@ body {
     <audio id="bg-music" loop src="sound/0517.MP3"></audio>
     
     <button class="audio-control" id="mute-btn">Unmute</button>
+    <button class="audio-control" id="lang-btn" onclick="switchLanguage()">EN</button>
 
     <div class="slider-container">
         
@@ -466,6 +472,46 @@ window.addEventListener('touchend', (e) => {
                 isMuted = true;
             }
         });
+        const translations = {
+    vi: [
+        "à ởi à ời",
+        "qua bàn tay mềm đặt trên lưng trẻ",
+        "hai tay siết chặt, mẹ bồng như giữ lấy",
+        "để mùi tóc, mùi da",
+        "được lưu lại trong hơi thở",
+        "để tiếng khóc tan dần thành im lặng",
+        "dẫu sau này đời dọc ngang vạn dặm",
+        "chân mỏi rồi lại thèm sà vào lòng ấm ngày xưa",
+        "bấu víu vào như thuở ta còn bé",
+        "và đâu đó, những phần thân thể",
+        "vẫn đi theo<br>về phía tiếng à ơi."
+    ],
+    en: [
+        "lullaby, oh lullaby",
+        "through a gentle hand resting on the child's back",
+        "arms wrapped tight, mother holds on as if to keep",
+        "so the scent of hair, the warmth of skin",
+        "may be kept inside a breath",
+        "so the sound of crying fades into silence",
+        "even as life later takes us ten thousand miles",
+        "when feet grow tired, we long to curl into that old warmth",
+        "to cling on, like when we were still small",
+        "and somewhere, parts of us",
+        "still follow<br>the direction of the lullaby."
+    ]
+};
+
+let currentLang = 'vi';
+
+function switchLanguage() {
+    currentLang = currentLang === 'vi' ? 'en' : 'vi';
+    const langBtn = document.getElementById('lang-btn');
+    langBtn.textContent = currentLang === 'vi' ? 'EN' : 'VI';
+
+    document.querySelectorAll('.slide-content p').forEach((p, i) => {
+        p.innerHTML = translations[currentLang][i];
+    });
+}
     </script>
 </body>
 </html>

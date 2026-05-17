@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photograph Showreel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* New: Top Left Instruction Line */
+.scroll-instruction {
+    position: fixed;
+    top: 40px;
+    left: 8%;
+    z-index: 100;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Audio Control */
+.audio-control {
+    position: fixed;
+    top: 40px;
+    right: 8%; /* Aligned to match the instruction's left margin */
+    z-index: 100;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.audio-control:hover {
+    color: #fff;
+}
+
+/* Slider Container */
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Individual Slide */
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end; 
+    justify-content: flex-start; 
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.4s cubic-bezier(0.25, 1, 0.5, 1); 
+}
+
+.slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 2;
+}
+
+.slide.previous {
+    opacity: 0;
+    z-index: 1;
+}
+
+/* Fullscreen Background Image */
+.slide-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.slide-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0) contrast(1.2);
+    scale: 1.05;
+    transition: filter 1.6s cubic-bezier(0.25, 1, 0.5, 1), transform 1.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.slide.active .slide-bg img {
+    filter: brightness(0.55) contrast(1); 
+    transform: scale(1);
+}
+
+.slide.previous .slide-bg img {
+    filter: brightness(0) contrast(1.4);
+    transform: scale(0.98);
+}
+
+/* Bottom Left Text Content */
+.slide-content {
+    position: relative;
+    z-index: 10;
+    max-width: 650px; 
+    margin-left: 8%;  
+    margin-bottom: 8%; 
+    padding: 0 20px;
+}
+
+.slide p {
+    font-size: 28px; 
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    color: rgba(255, 255, 255, 0.95);
+    transform: translateY(25px);
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1) 0.5s, opacity 1s cubic-bezier(0.25, 1, 0.5, 1) 0.5s;
+}
+
+.slide.active h2, 
+.slide.active p {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Right Side Progress Track */
+.progress-indicator {
+    position: fixed;
+    right: 45px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    height: 200px;
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 0%;
+    background-color: #fff;
+    transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ==========================================
+   RESPONSIVE MEDIA QUERIES (The Update)
+   ========================================== */
+
+/* Tablets & Small Laptops */
+@media (max-width: 1024px) {
+    .slide-content {
+        max-width: 550px;
+        margin-left: 6%;
+        margin-bottom: 10%;
+    }
+    .slide p {
+        font-size: 24px;
+    }
+    .scroll-instruction { left: 6%; }
+    .audio-control { right: 6%; }
+}
+
+/* Mobile Devices (Phones) */
+@media (max-width: 768px) {
+    .scroll-instruction {
+        top: 24px;
+        left: 24px;
+        font-size: 10px;
+    }
+    
+    .audio-control {
+        top: 24px;
+        right: 24px;
+        font-size: 10px;
+    }
+
+    .slide-content {
+        max-width: 100%;
+        margin-left: 24px;
+        margin-bottom: 40px;
+        padding-right: 40px; /* Leave space so text doesn't hit the progress bar */
+    }
+
+    .slide h2 {
+        font-size: 11px;
+        margin-bottom: 12px;
+    }
+
+    .slide p {
+        font-size: 18px; /* Scales down beautifully for phone layouts */
+        line-height: 1.4;
+    }
+
+    .progress-indicator {
+        right: 20px; /* Pull closer to edge on narrow viewports */
+        height: 120px;
+    }
+
+    .slide-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Prevents cropping, fits the whole image on screen */
+        background-color: #000; /* Fills empty top/bottom space with pitch black */
+    }
+
+    .slide-content {
+        max-width: 100%;
+        margin-left: 24px;
+        margin-bottom: 40px;
+        padding-right: 40px;
+        /* Optional: Gives text a dark background drop-shadow to stay readable over empty spaces */
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8); 
+    }
+}
+    </style>
+</head>
+<body>
+
+     <div class="scroll-instruction">* Scroll to view next</div>
+
+    <!-- Audio Element -->
+    <audio id="bg-music" loop src="/sound/0517.MP3"></audio>
+    
+    <button class="audio-control" id="mute-btn">Unmute</button>
+
+    <div class="slider-container">
+        
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3751.jpg" alt="Showreel 1">
+            </div>
+            <div class="slide-content">
+                <p>à ởi à ời</p>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3739.jpg" alt="Showreel 2">
+            </div>
+            <div class="slide-content">
+                <p>qua bàn tay mềm đặt trên lưng trẻ</p>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3809.jpg" alt="Showreel 3">
+            </div>
+            <div class="slide-content">
+                <p>hai tay siết chặt, mẹ bồng như giữ lấy</p>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3885.JPG" alt="Showreel 4">
+            </div>
+            <div class="slide-content">
+                <p>để mùi tóc, mùi da</p>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3926.jpg" alt="Showreel 5">
+            </div>
+            <div class="slide-content">
+                <p>được lưu lại trong hơi thở</p>
+            </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3922.jpg" alt="Showreel 6">
+            </div>
+            <div class="slide-content">
+                <p>để tiếng khóc tan dần thành im lặng</p>
+            </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3773.jpg" alt="Showreel 7">
+            </div>
+            <div class="slide-content">
+                <p>dẫu sau này đời dọc ngang vạn dặm</p>
+            </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3846.jpg" alt="Showreel 8">
+            </div>
+            <div class="slide-content">
+                <p>chân mỏi rồi lại thèm sà vào lòng ấm ngày xưa</p>
+            </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3912.jpg" alt="Showreel 9">
+            </div>
+            <div class="slide-content">
+                <p>bấu víu vào như thuở ta còn bé</p>
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3891.jpg" alt="Showreel 10">
+            </div>
+            <div class="slide-content">
+                <p>và đâu đó, những phần thân thể</p>
+            </div>
+        </div>
+
+        <!-- Slide 11 -->
+        <div class="slide">
+            <div class="slide-bg">
+                <img src="/photos/DSC_3802.jpg" alt="Showreel 4">
+            </div>
+            <div class="slide-content">
+                <p>vẫn đi theo<br>về phía tiếng à ơi.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Side Progress Track -->
+    <div class="progress-indicator">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress-bar');
+        const muteBtn = document.getElementById('mute-btn');
+        const audio = document.getElementById('bg-music');
+        
+        let currentIndex = 0;
+        let isAnimating = false;
+        const totalSlides = slides.length;
+
+        function updateProgress() {
+            const progressPercentage = ((currentIndex + 1) / totalSlides) * 100;
+            progressBar.style.height = `${progressPercentage}%`;
+        }
+        updateProgress();
+
+        function goToSlide(index) {
+            if (isAnimating || index < 0 || index >= totalSlides) return;
+            isAnimating = true;
+
+            const currentSlide = slides[currentIndex];
+            const nextSlide = slides[index];
+
+            // Assign transitions
+            currentSlide.classList.remove('active');
+            currentSlide.classList.add('previous');
+            
+            nextSlide.classList.add('active');
+            
+            currentIndex = index;
+            updateProgress();
+
+            // Clear old states after transition ends
+            setTimeout(() => {
+                slides.forEach((slide, idx) => {
+                    if (idx !== currentIndex) {
+                        slide.classList.remove('previous');
+                    }
+                });
+                isAnimating = false;
+            }, 1600); // Extended to match the cinematic 1.6s image transition
+        }
+
+        // Replace the window wheel listener with this comprehensive desktop + mobile handler:
+
+let touchStartY = 0;
+let touchEndY = 0;
+
+function handleNavigation(direction) {
+    if (isAnimating) return;
+    
+    if (direction === 'next') {
+        const nextIndex = (currentIndex === totalSlides - 1) ? 0 : currentIndex + 1;
+        goToSlide(nextIndex);
+    } else if (direction === 'prev') {
+        const prevIndex = (currentIndex === 0) ? totalSlides - 1 : currentIndex - 1;
+        goToSlide(prevIndex);
+    }
+}
+
+// Desktop Scroll
+window.addEventListener('wheel', (e) => {
+    if (e.deltaY > 0) {
+        handleNavigation('next');
+    } else {
+        handleNavigation('prev');
+    }
+});
+
+// Mobile Touch Gestures
+window.addEventListener('touchstart', (e) => {
+    touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+window.addEventListener('touchend', (e) => {
+    touchEndY = e.changedTouches[0].screenY;
+    const swipeDistance = touchStartY - touchEndY;
+    
+    // Minimum threshold requirement for a swipe action (50px)
+    if (Math.abs(swipeDistance) > 50) {
+        if (swipeDistance > 0) {
+            handleNavigation('next'); // Swiped Up
+        } else {
+            handleNavigation('prev'); // Swiped Down
+        }
+    }
+}, { passive: true });
+
+        // Audio System
+        let isMuted = true;
+        muteBtn.addEventListener('click', () => {
+            if (isMuted) {
+                audio.play().catch(err => console.log("Audio waiting for interaction: ", err));
+                audio.muted = false;
+                muteBtn.textContent = "Mute";
+                isMuted = false;
+            } else {
+                audio.muted = true;
+                muteBtn.textContent = "Unmute";
+                isMuted = true;
+            }
+        });
+    </script>
+</body>
+</html>
